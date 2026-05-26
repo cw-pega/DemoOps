@@ -1,0 +1,21 @@
+title: "CDH next best action — retail banking"
+description: >
+  Real-time NBA decisioning for a retail banking customer service rep
+  handling churn risk. Shows CDH adapting offers in real time.
+vertical: Financial services
+product:
+  - CDH
+type: Walkthrough
+region: EMEA
+persona: Technical buyer
+duration_minutes: 12
+status: active
+event: null
+iframe_safe: true
+owner: DemoX EMEA
+source_tool: Manual
+tags:
+  - banking
+  - nba
+  - churn
+  - real-time

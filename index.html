@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DemoX Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f6f2;
+      --surface: #ffffff;
+      --border: #e2e0d8;
+      --border-mid: #ccc9be;
+      --text: #1a1917;
+      --text-2: #6b6860;
+      --text-3: #a09d96;
+      --accent: #1a1917;
+      --tag-logistics: #e8f4e8; --tag-logistics-t: #1a4a1a;
+      --tag-fs: #e8eef8; --tag-fs-t: #1a2a5a;
+      --tag-health: #f0e8f4; --tag-health-t: #3a1a5a;
+      --tag-cpg: #fdf0e0; --tag-cpg-t: #5a3a0a;
+      --tag-insurance: #e8f4f4; --tag-insurance-t: #0a3a3a;
+      --tag-blueprint: #fff0e8; --tag-blueprint-t: #5a2a0a;
+      --tag-cdh: #e8f0ff; --tag-cdh-t: #1a2a6a;
+      --tag-cosmos: #f4e8ff; --tag-cosmos-t: #3a0a6a;
+      --tag-pega: #e8fff4; --tag-pega-t: #0a4a2a;
+      --active: #1a1917;
+      --active-t: #f7f6f2;
+      --draft-bg: #f7f6f2; --draft-t: #9a9890;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      background: var(--surface);
+    }
+
+    header h1 {
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+
+    header span {
+      font-size: 13px;
+      color: var(--text-3);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .toolbar {
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .search-wrap svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px;
+      height: 15px;
+      stroke: var(--text-3);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 12px 8px 32px;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+    }
+
+    input[type="text"]:focus { border-color: var(--accent); }
+
+    select {
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      cursor: pointer;
+    }
+
+    select:focus { border-color: var(--accent); }
+
+    .main {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      min-height: calc(100vh - 113px);
+    }
+
+    .results-pane {
+      padding: 24px 32px;
+      border-right: 1px solid var(--border);
+    }
+
+    .results-meta {
+      font-size: 12px;
+      color: var(--text-3);
+      font-family: 'DM Mono', monospace;
+      margin-bottom: 16px;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: border-color .12s, box-shadow .12s;
+    }
+
+    .card:hover { border-color: var(--border-mid); }
+    .card.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.35;
+      color: var(--text);
+    }
+
+    .status-pill {
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      padding: 2px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .status-active { background: #e8f4e8; color: #1a4a1a; }
+    .status-draft { background: var(--draft-bg); color: var(--draft-t); border: 1px solid var(--border); }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+
+    .tag {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .tag-logistics { background: var(--tag-logistics); color: var(--tag-logistics-t); }
+    .tag-financial { background: var(--tag-fs); color: var(--tag-fs-t); }
+    .tag-healthcare { background: var(--tag-health); color: var(--tag-health-t); }
+    .tag-cpg { background: var(--tag-cpg); color: var(--tag-cpg-t); }
+    .tag-insurance { background: var(--tag-insurance); color: var(--tag-insurance-t); }
+    .tag-blueprint { background: var(--tag-blueprint); color: var(--tag-blueprint-t); }
+    .tag-cdh { background: var(--tag-cdh); color: var(--tag-cdh-t); }
+    .tag-cosmos { background: var(--tag-cosmos); color: var(--tag-cosmos-t); }
+    .tag-pega { background: var(--tag-pega); color: var(--tag-pega-t); }
+    .tag-default { background: #f0ede8; color: #4a4840; }
+
+    .card-foot {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      color: var(--text-3);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .card-foot span { display: flex; align-items: center; gap: 3px; }
+
+    .warn-icon { color: #c47a00; }
+
+    .claude-badge {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 3px;
+      background: #f0ede8;
+      color: #6b5a3a;
+      font-family: 'DM Mono', monospace;
+      border: 1px solid #e0d8cc;
+    }
+
+    .preview-pane {
+      padding: 24px;
+      background: var(--bg);
+    }
+
+    .preview-empty {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-3);
+      font-size: 13px;
+      text-align: center;
+      gap: 8px;
+    }
+
+    .preview-empty svg {
+      width: 32px;
+      height: 32px;
+      stroke: var(--border-mid);
+      fill: none;
+      stroke-width: 1.5;
+    }
+
+    .preview-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .preview-thumb {
+      width: 100%;
+      height: 180px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .preview-thumb iframe {
+      width: 200%;
+      height: 200%;
+      transform: scale(0.5);
+      transform-origin: top left;
+      border: none;
+      pointer-events: none;
+    }
+
+    .preview-thumb-placeholder {
+      font-size: 12px;
+      color: var(--text-3);
+      text-align: center;
+      padding: 12px;
+    }
+
+    .preview-body { padding: 16px; }
+
+    .preview-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .preview-desc {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .preview-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-size: 12px;
+    }
+
+    .field-label {
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 2px;
+    }
+
+    .field-val { color: var(--text); }
+
+    .preview-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+
+    .btn {
+      font-size: 12px;
+      font-family: 'DM Sans', sans-serif;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      text-decoration: none;
+      display: block;
+      transition: background .1s, border-color .1s;
+    }
+
+    .btn:hover { background: var(--surface); border-color: var(--border-mid); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--active-t);
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover { opacity: .88; }
+
+    .empty-state {
+      padding: 48px 0;
+      text-align: center;
+      color: var(--text-3);
+      font-size: 13px;
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 760px) {
+      .main { grid-template-columns: 1fr; }
+      .preview-pane { border-top: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>DemoX Library</h1>
+  <span id="lib-count">loading...</span>
+</header>
+
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="q" placeholder="Search by title, vertical, keyword..." oninput="render()">
+  </div>
+  <select id="f-vertical" onchange="render()">
+    <option value="">All verticals</option>
+    <option>Logistics</option>
+    <option>Financial services</option>
+    <option>Healthcare</option>
+    <option>CPG</option>
+    <option>Insurance</option>
+  </select>
+  <select id="f-product" onchange="render()">
+    <option value="">All products</option>
+    <option>Blueprint</option>
+    <option>CDH</option>
+    <option>Pega Platform</option>
+    <option>Cosmos</option>
+  </select>
+  <select id="f-region" onchange="render()">
+    <option value="">All regions</option>
+    <option>AMS</option>
+    <option>EMEA</option>
+    <option>APJ</option>
+  </select>
+  <select id="f-status" onchange="render()">
+    <option value="">All statuses</option>
+    <option value="active">Active</option>
+    <option value="draft">Draft</option>
+  </select>
+</div>
+
+<div class="main">
+  <div class="results-pane">
+    <div class="results-meta" id="count"></div>
+    <div class="demo-grid" id="grid"></div>
+  </div>
+  <div class="preview-pane" id="preview">
+    <div class="preview-empty">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      <span>Select a demo to preview</span>
+    </div>
+  </div>
+</div>
+
+<script>
+let demos = [];
+let selected = null;
+
+function verticalTagClass(v) {
+  if (!v) return 'tag-default';
+  const map = {
+    'logistics': 'tag-logistics',
+    'financial services': 'tag-financial',
+    'healthcare': 'tag-healthcare',
+    'cpg': 'tag-cpg',
+    'insurance': 'tag-insurance',
+  };
+  return map[v.toLowerCase()] || 'tag-default';
+}
+
+function productTagClass(p) {
+  if (!p) return 'tag-default';
+  const map = {
+    'blueprint': 'tag-blueprint',
+    'cdh': 'tag-cdh',
+    'cosmos': 'tag-cosmos',
+    'pega platform': 'tag-pega',
+  };
+  return map[p.toLowerCase()] || 'tag-default';
+}
+
+function matches(d) {
+  const q = document.getElementById('q').value.toLowerCase();
+  const v = document.getElementById('f-vertical').value;
+  const p = document.getElementById('f-product').value;
+  const r = document.getElementById('f-region').value;
+  const s = document.getElementById('f-status').value;
+  if (q && !d.title.toLowerCase().includes(q) && !(d.description||'').toLowerCase().includes(q) && !(d.vertical||'').toLowerCase().includes(q) && !(d.tags||[]).some(t=>t.toLowerCase().includes(q))) return false;
+  if (v && d.vertical !== v) return false;
+  if (p && !(d.product||[]).includes(p)) return false;
+  if (r && d.region !== r) return false;
+  if (s && d.status !== s) return false;
+  return true;
+}
+
+function render() {
+  const filtered = demos.filter(matches);
+  document.getElementById('count').textContent = filtered.length + ' demo' + (filtered.length !== 1 ? 's' : '');
+
+  if (!filtered.length) {
+    document.getElementById('grid').innerHTML = '<div class="empty-state">No demos match these filters.</div>';
+    if (selected && !filtered.find(d => d.id === selected)) {
+      selected = null;
+      renderPreview();
+    }
+    return;
+  }
+
+  document.getElementById('grid').innerHTML = filtered.map(d => `
+    <div class="card${selected === d.id ? ' active' : ''}" onclick="selectDemo('${d.id}')">
+      <div class="card-top">
+        <div class="card-title">${d.title}</div>
+        <span class="status-pill status-${d.status||'draft'}">${d.status||'draft'}</span>
+      </div>
+      <div class="card-desc">${d.description||''}</div>
+      <div class="tags">
+        <span class="tag ${verticalTagClass(d.vertical)}">${d.vertical||''}</span>
+        ${(d.product||[]).map(p => `<span class="tag ${productTagClass(p)}">${p}</span>`).join('')}
+        ${d.event ? `<span class="tag tag-default">${d.event}</span>` : ''}
+      </div>
+      <div class="card-foot">
+        <span>${d.duration_minutes} min</span>
+        <span>·</span>
+        <span>${d.region||''}</span>
+        ${!d.iframe_safe ? '<span class="warn-icon" title="Not iframe safe">⚠</span>' : ''}
+        ${d.has_claude_md ? '<span class="claude-badge">claude.md</span>' : ''}
+      </div>
+    </div>
+  `).join('');
+
+  renderPreview();
+}
+
+function selectDemo(id) {
+  selected = selected === id ? null : id;
+  render();
+}
+
+function renderPreview() {
+  const area = document.getElementById('preview');
+  if (!selected) {
+    area.innerHTML = `<div class="preview-empty"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>Select a demo to preview</span></div>`;
+    return;
+  }
+  const d = demos.find(x => x.id === selected);
+  if (!d) return;
+
+  const thumb = d.iframe_safe
+    ? `<iframe src="${d.path}" title="${d.title} preview" loading="lazy"></iframe>`
+    : `<div class="preview-thumb-placeholder">⚠ Not iframe-safe — open in a new tab to preview</div>`;
+
+  area.innerHTML = `
+    <div class="preview-card">
+      <div class="preview-thumb">${thumb}</div>
+      <div class="preview-body">
+        <div class="preview-title">${d.title}</div>
+        <div class="preview-desc">${d.description||''}</div>
+        <div class="preview-fields">
+          <div><div class="field-label">Vertical</div><div class="field-val">${d.vertical||'—'}</div></div>
+          <div><div class="field-label">Region</div><div class="field-val">${d.region||'—'}</div></div>
+          <div><div class="field-label">Products</div><div class="field-val">${(d.product||[]).join(', ')||'—'}</div></div>
+          <div><div class="field-label">Persona</div><div class="field-val">${d.persona||'—'}</div></div>
+          <div><div class="field-label">Duration</div><div class="field-val">${d.duration_minutes} min</div></div>
+          <div><div class="field-label">Source tool</div><div class="field-val">${d.source_tool||'—'}</div></div>
+          <div><div class="field-label">Owner</div><div class="field-val">${d.owner||'—'}</div></div>
+          <div><div class="field-label">Event</div><div class="field-val">${d.event||'—'}</div></div>
+        </div>
+        <div class="preview-actions">
+          <a class="btn btn-primary" href="${d.path}" target="_blank">Open demo →</a>
+          ${d.has_claude_md ? `<a class="btn" href="demos/${d.id}/claude.md" target="_blank">View claude.md</a>` : ''}
+          <a class="btn" href="demos/${d.id}/demo.yaml" target="_blank">View metadata</a>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+fetch('demos.json')
+  .then(r => r.json())
+  .then(data => {
+    demos = data;
+    document.getElementById('lib-count').textContent = demos.length + ' demos';
+    render();
+  })
+  .catch(() => {
+    document.getElementById('lib-count').textContent = 'could not load demos.json';
+    document.getElementById('grid').innerHTML = '<div class="empty-state">Run <code>python3 scripts/build-index.py</code> to generate demos.json, then reload.</div>';
+  });
+</script>
+</body>
+</html>

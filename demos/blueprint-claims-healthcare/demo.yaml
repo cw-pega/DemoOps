@@ -1,0 +1,21 @@
+title: "Blueprint claims intake — healthcare"
+description: >
+  Blueprint-generated claims intake flow showing AI-assisted field
+  mapping and process design. Built entirely from Blueprint output.
+vertical: Healthcare
+product:
+  - Blueprint
+type: Concept
+region: APJ
+persona: Executive
+duration_minutes: 5
+status: active
+event: null
+iframe_safe: true
+owner: DemoX APJ
+source_tool: Blueprint MCP
+tags:
+  - claims
+  - intake
+  - ai-generated
+  - process-design
