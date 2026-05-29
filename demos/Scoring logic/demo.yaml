@@ -1,0 +1,23 @@
+title: "All In Logistics — hazard recall"
+description: >
+  Enterprise logistics demo showing a mislabelling recall trigger
+  resolved through Pega case management, closing on Blueprint value prop.
+vertical: Logistics
+product:
+  - Blueprint
+  - Pega Platform
+type: Scenario
+region: AMS
+persona: Business stakeholder
+duration_minutes: 8
+status: active
+event: Pega World 2025
+iframe_safe: false
+owner: DemoX AMS
+source_tool: Claude Code
+tags:
+  - cpg
+  - fmcg
+  - recall
+  - hazard
+  - vegas-2025
